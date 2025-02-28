@@ -30,12 +30,18 @@ def create_hierarchical_data(df):
         if not len(
                 authors) == 1:  # in some conversations are more than just one named author, which will be removed here
             continue
+        else:
+            company = authors[0]
         group = group[group["inbound"] == True]
         group = group.sort_values(by='created_at')
 
+        # remove the company name in the text - ignore case
+        group['text'] = group['text'].str.replace("@" + company, '', case=False)
+        group['text'] = group['text'].str.replace(company, '', case=False)
+
         conversation_data.append({
             'conversations': group["text"].to_list(),
-            'company': authors[0]
+            'company': company
         })
     logger.info(f"Number of conversations: {len(conversation_data)}")
     return conversation_data

@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from sklearn.model_selection import train_test_split
 
-from src.services.data_service import prepare_data, create_hierarchical_data, save_to_jsonl
+from src.services.data_service import prepare_data, create_hierarchical_data, save_to_jsonl, \
+    create_hierarchical_data_prod
 from src.services.training_service import upload_training_and_validation_files, start_fine_tuning_job
 
 router = APIRouter()
@@ -35,7 +36,8 @@ async def upload_file(training_data: UploadFile = File(...)):
     save_to_jsonl(train_datatest, training_file_path)
     save_to_jsonl(validation_dataset, validation_file_path)
 
-    training_file_id, validation_file_id = upload_training_and_validation_files(training_file_path, validation_file_path)
+    training_file_id, validation_file_id = upload_training_and_validation_files(training_file_path,
+                                                                                validation_file_path)
 
     job_id = start_fine_tuning_job(training_file_id, validation_file_id, "gpt-4o-mini-2024-07-18", SEED)
 
