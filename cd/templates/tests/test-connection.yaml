@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "twitter-classification.fullname" . }}-test-connection"
+  labels:
+    {{- include "twitter-classification.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "twitter-classification.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

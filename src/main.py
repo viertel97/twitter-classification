@@ -8,18 +8,20 @@ from config.api_documentation import description, tags_metadata, title
 from src.controller import (
     classification_controller,
     training_controller,
+    anonymization_controller
 )
 
 controllers = [
-    #classification_controller,
+    classification_controller,
     training_controller,
+    anonymization_controller
 ]
 
 logger = setup_logging(__name__)
 
 
 app = FastAPI(
-    debug=True, openapi_tags=tags_metadata, title=title, description=description
+    debug=False, openapi_tags=tags_metadata, title=title, description=description
 )
 router = APIRouter()
 
@@ -36,5 +38,5 @@ def health():
 
 if __name__ == "__main__":
     uvicorn.run(
-        f"{Path(__file__).stem}:app", host="0.0.0.0", reload=True, port=80
+        f"{Path(__file__).stem}:app", host="0.0.0.0", reload=False, port=80
     )
