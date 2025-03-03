@@ -5,6 +5,7 @@ This project is a simple script that uses the OpenAI API to classify tweets.
 It has the following functionality:
 - Anonymize the tweet-data
 - Fine-tune a model with the anonymized data
+- Gather job data from the OpenAI API
 - Classify the tweets using the trained model
 ## Installation
 
@@ -22,5 +23,6 @@ OPENAI_API_KEY=XYZ
 
 ## Further improvements
 - Adaption the anonymization method - the current one (Presidio Analyzer) creates reuses the same anonymization for the same name. Therefore, "John" will always be <PERSON_0> and "Jane" will always be <PERSON_1>. Maybe replacing the original names with fake names would be a better approach.
-- Automatically detect language of the tweet and switch model accordingly
-- Hyperparameter tuning
+- Automatically detect language of the tweet and switch NER model accordingly
+- Hyperparameter tuning of LLM fine-tuning
+- Using LLM evaluation framework to evaluate and test the model (eg. DeepEval)
