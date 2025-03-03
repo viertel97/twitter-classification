@@ -107,7 +107,7 @@ def start_fine_tuning_job(training_file_id, validation_file_id, model, seed):
         validation_file=validation_file_id,
         model=model,
         seed=seed,
-        hyperparameters={"n_epochs": 3, "batch_size": 1, "learning_rate_multiplier": 1} # defaults: n_epochs=3, batch_size=1, learning_rate_multiplier=1
+        # hyperparameters={"n_epochs": 3, "batch_size": 1, "learning_rate_multiplier": 1} # defaults
     )
 
     logger.info(f"Fine-tuning job submitted: {response}")
