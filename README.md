@@ -26,17 +26,21 @@ AZURE_ENDPOINT=XYZ
 
 1. Clone the repository
 2. Populate the `.env` file with your OpenAI API key
-2. run `docker build -t foo . && docker run --env-file .env -it foo`
+3. Run `docker build -t foo . && docker run --env-file .env -it foo 
+4. Check 
 
 ## Further improvements
 - Adaption the anonymization method - the current one (Presidio Analyzer) creates reuses the same anonymization for the same name. Therefore, "John" will always be <PERSON_0> and "Jane" will always be <PERSON_1>. Maybe replacing the original names with fake names would be a better approach.
-- Automatically detect language of the tweet and switch NER model accordingly
-- Hyperparameter tuning of LLM fine-tuning
-- Using LLM evaluation framework to evaluate and test the model (eg. DeepEval)
-- Tracking token usage via code (saving the token usage per request / per training)
+- Automatically detect language of the tweet and switch NER model accordingly.
+- Hyperparameter tuning of LLM fine-tuning.
+- Using LLM evaluation framework to evaluate and test the model (eg. DeepEval).
+- Tracking token usage via code (saving the token usage per request / per training).
+- Using different fine-tuning methods instead of supervised eg. [DPO](https://arxiv.org/abs/2305.18290).
+- Using the same batch_size and learning rate for both fine-tuning models to make them more comparable.
 
 ## Known issues
 - Due to problems with [cython-blis](https://github.com/explosion/cython-blis/issues/117) (a spacy dependency) I added the following line to the Dockerfile:
-```BLIS_ARCH=generic
+```
+BLIS_ARCH=generic
 ```
 This is a workaround and should be removed as soon as the issue is fixed.

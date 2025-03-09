@@ -19,7 +19,8 @@ dependencies = [
     "python-multipart>=0.0.20",
     "pydantic==2.9.2",
     "spacy<3.8.0",
-    "pip"
+    "pip",
+    "plotly>=6.0.0",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"
@@ -31,5 +32,5 @@ distribution = false
 
 [dependency-groups]
 development = [
-    "pip>=25.0.1",
+    "ruff>=0.9.10",
 ]
