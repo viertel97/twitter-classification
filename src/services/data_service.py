@@ -68,7 +68,7 @@ def prepare_data(file_path):
     df = df[df['tweet_id'].apply(lambda x: str(x).isdigit())]
     df = df[df['text'].apply(lambda x: isinstance(x, str))]
     df['tweet_id'] = df['tweet_id'].astype(int)
-    if 'created_at' in df.columns:
+    if 'created_at' in df.columns and df['created_at'].dtype == 'datetime64[ns]':
         df['created_at'] = pd.to_datetime(df['created_at'], format="%a %b %d %H:%M:%S %z %Y")
     df['in_response_to_tweet_id'] = df['in_response_to_tweet_id'].astype(float)
     if 'Unnamed: 0' in df.columns:

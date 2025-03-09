@@ -7,9 +7,8 @@ authors = [
 ]
 dependencies = [
     "presidio-analyzer[transformers]",
-    "presidio-anonymizer==2.2.357",
+    "presidio_anonymizer",
     "pandas==2.2.3",
-    "spacy==3.8.4",
     "openai==1.65.1",
     "tqdm>=4.67.1",
     "fastapi==0.115.11",
@@ -19,7 +18,8 @@ dependencies = [
     "uvicorn>=0.34.0",
     "python-multipart>=0.0.20",
     "pydantic==2.9.2",
-    "pip>=25.0.1",
+    "spacy<3.8.0",
+    "pip"
 ]
 requires-python = "==3.11.*"
 readme = "README.md"
@@ -28,3 +28,8 @@ license = { text = "MIT" }
 
 [tool.pdm]
 distribution = false
+
+[dependency-groups]
+development = [
+    "pip>=25.0.1",
+]

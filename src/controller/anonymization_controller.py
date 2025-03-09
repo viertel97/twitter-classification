@@ -32,5 +32,5 @@ async def anonymize(file_to_anonymize: Annotated[UploadFile, File]):
     for row in tqdm(df_list):
         row["text"] = update_text(row["text"])
     df = pd.DataFrame(df_list)
-    df.to_csv("anonymized_data.csv")
+    df.to_csv("anonymized_data.csv", index=False)
     return FileResponse("anonymized_data.csv")

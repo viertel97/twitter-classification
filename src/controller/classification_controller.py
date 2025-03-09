@@ -1,4 +1,5 @@
 from typing import Annotated
+from tqdm import tqdm
 
 import pandas as pd
 from fastapi import APIRouter, Form, File, UploadFile
@@ -29,13 +30,14 @@ async def upload_file(classification_file: Annotated[UploadFile, File()], allowe
     df = prepare_data(classification_file.filename)
     conversation_data = create_hierarchical_data_prod(df)
 
-    results = []
-    for conversation in conversation_data:
+    for conversation in tqdm(conversation_data):
         classification_result = classify_conversation(conversation, model=fine_tuned_model, companies=allowed_companies)
         conversation.update({"company": classification_result})
 
-    df = pd.DataFrame(results)
-    df.to_csv("classification_results.csv")
+    df_conversation = pd.DataFrame(conversation_data)
+    df_conversation = df_conversation.explode(['conversations', 'tweet_id'])
+    df = df.merge(df_conversation[["tweet_id","company"]], on='tweet_id')
+    df.to_csv("classification_results.csv", index=False)
     return FileResponse("classification_results.csv")
 
 

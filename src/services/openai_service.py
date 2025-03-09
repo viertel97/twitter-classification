@@ -2,54 +2,30 @@ import json
 import os
 
 from dotenv import load_dotenv
-from openai import AzureOpenAI
-from pydantic import BaseModel
 from quarter_lib.logging import setup_logging
 
 from src.config import SEED
+from src.config.llm_config import get_function_schema, get_messages
 
 logger = setup_logging(__name__)
 
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
-if not AZURE_ENDPOINT:
-    AZURE_ENDPOINT = os.getenv("AZURE_CUSTOM_ENDPOINT")
-MODEL_NAME = os.getenv("MODEL_NAME")
-
-client = AzureOpenAI(api_key=OPENAI_API_KEY, azure_endpoint=AZURE_ENDPOINT, api_version="2024-08-01-preview")
+AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 
 
-class ClassificationResult(BaseModel):
-    company: str
-
-def get_function_schema(allowed_companies):
-    function_schema = {
-        "name": "classify_company",
-        "description": "Classify the company referred to in the tweet conversation.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "company": {
-                    "type": "string",
-                    "enum": allowed_companies,
-                    "description": "The company name that best fits the conversation, or 'Unclear' if none applies."
-                }
-            },
-            "required": ["company"]
-        }
-    }
-    return function_schema
+if OPENAI_API_KEY:
+    from openai import OpenAI
+    client = OpenAI(api_key=OPENAI_API_KEY)
+elif AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT:
+    from openai import AzureOpenAI
+    client = AzureOpenAI(api_key=AZURE_OPENAI_API_KEY, azure_endpoint=AZURE_OPENAI_ENDPOINT, api_version="2024-08-01-preview")
+else:
+    raise Exception("No OpenAI API key found.")
 
 
-def get_messages(conversation_data):
-    return [
-        {
-            "role": "user",
-            "content": f"Please classify the following tweet conversation to one of the allowed companies: {json.dumps(conversation_data)}"
-        }
-    ]
 
 def classify_conversation(conversation_data, model, companies):
     allowed_companies = companies.copy()
@@ -111,7 +87,7 @@ def start_fine_tuning_job(training_file_id, validation_file_id, model, seed):
     )
 
     logger.info(f"Fine-tuning job submitted: {response}")
-    return response.model_dump_json()
+    return response
 
 def check_status(job_id):
     response = client.fine_tuning.jobs.retrieve(job_id)
