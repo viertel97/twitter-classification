@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 
 from src.config import SEED, training_file_path, validation_file_path
 from src.services.data_service import prepare_data, create_hierarchical_data, save_to_jsonl
-from src.services.openai_service import check_status, upload_training_and_validation_files, start_fine_tuning_job
+from src.services.openai_service import check_status, upload_training_and_validation_files, start_fine_tuning_job, \
+	group_companies
 
 logger = setup_logging(__name__)
 
@@ -34,6 +35,7 @@ async def train(
 		training_data.file.close()
 	df = prepare_data(training_data.filename)
 	conversation_data, companies = create_hierarchical_data(df)
+	grouped_companies = group_companies(companies)
 
 	train_datatest, validation_dataset = train_test_split(conversation_data, test_size=0.2, random_state=SEED)
 
@@ -46,7 +48,7 @@ async def train(
 
 	return {
 		"job": job_response,
-		"companies": list(companies),
+		"grouped_companies": list(grouped_companies),
 		"training_file_id": training_file_id,
 		"validation_file_id": validation_file_id,
 	}

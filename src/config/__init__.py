@@ -8,109 +8,47 @@ DATA_PATH = os.path.join(Path(os.path.abspath(__file__)).parent.parent.parent, "
 training_file_name = "training.jsonl"
 validation_file_name = "validation.jsonl"
 
-DEFAULT_COMPANIES = [
-	"ATT",
-	"ATVIAssist",
-	"AWSSupport",
-	"AdobeCare",
-	"AirAsiaSupport",
-	"AirbnbHelp",
-	"AlaskaAir",
-	"AldiUK",
-	"AmazonHelp",
-	"AmericanAir",
-	"AppleSupport",
-	"ArbysCares",
-	"ArgosHelpers",
-	"AskAmex",
-	"AskCiti",
-	"AskDSC",
-	"AskLyft",
-	"AskPapaJohns",
-	"AskPayPal",
-	"AskPlayStation",
-	"AskRBC",
-	"AskRobinhood",
-	"AskSeagate",
-	"AskTarget",
-	"AskTigogh",
-	"AskVirginMoney",
-	"Ask_Spectrum",
-	"Ask_WellsFargo",
-	"AskeBay",
-	"AsurionCares",
-	"AzureSupport",
-	"BofA_Help",
-	"BoostCare",
-	"British_Airways",
-	"CenturyLinkHelp",
-	"ChaseSupport",
-	"ChipotleTweets",
-	"CoxHelp",
-	"DellCares",
-	"Delta",
-	"DoorDash_Help",
-	"DropboxSupport",
-	"DunkinDonuts",
-	"GWRHelp",
-	"GloCare",
-	"GoDaddyHelp",
-	"GooglePlayMusic",
-	"GreggsOfficial",
-	"HPSupport",
-	"HiltonHelp",
-	"IHGService",
-	"JackBox",
-	"JetBlue",
-	"KFC_UKI_Help",
-	"Kimpton",
-	"LondonMidland",
-	"MOO",
-	"MTNC_Care",
-	"McDonalds",
-	"MicrosoftHelps",
-	"Morrisons",
-	"NeweggService",
-	"NikeSupport",
-	"NortonSupport",
-	"O2",
-	"OfficeSupport",
-	"PandoraSupport",
-	"Postmates_Help",
-	"SCsupport",
-	"SW_Help",
-	"Safaricom_Care",
-	"SouthwestAir",
-	"SpotifyCares",
-	"TMobileHelp",
-	"TacoBellTeam",
-	"Tesco",
-	"TfL",
-	"TwitterSupport",
-	"UPSHelp",
-	"USCellularCares",
-	"Uber_Support",
-	"VMUcare",
-	"VerizonSupport",
-	"VirginAmerica",
-	"VirginAtlantic",
-	"VirginTrains",
-	"Walmart",
-	"XboxSupport",
-	"YahooCare",
-	"airtel_care",
-	"askpanera",
-	"asksalesforce",
-	"comcastcares",
-	"hulu_support",
-	"idea_cares",
-	"marksandspencer",
-	"mediatemplehelp",
-	"nationalrailenq",
-	"sainsburys",
-	"sizehelpteam",
-	"sprintcare",
-]
+DEFAULT_COMPANY_BINS = {
+    "Telecommunications": [
+        "ATT", "AWSSupport", "AzureSupport", "BoostCare", "CenturyLinkHelp", "CoxHelp",
+        "MTNC_Care", "O2", "Safaricom_Care", "TMobileHelp", "USCellularCares", "VerizonSupport", "airtel_care", "idea_cares"
+    ],
+    "Technology & Software": [
+        "AdobeCare", "AmazonHelp", "AppleSupport", "AsurionCares", "DropboxSupport",
+        "GooglePlayMusic", "HPSupport", "MicrosoftHelps", "NortonSupport", "OfficeSupport",
+        "PandoraSupport", "XboxSupport", "YahooCare", "asksalesforce"
+    ],
+    "Financial Services": [
+        "AskAmex", "AskCiti", "AskRBC", "AskRobinhood", "AskVirginMoney", "Ask_WellsFargo",
+        "BofA_Help", "ChaseSupport", "SCsupport"
+    ],
+    "Retail & E-commerce": [
+        "AldiUK", "ArgosHelpers", "AskTarget", "GreggsOfficial", "MOO", "Morrisons",
+        "NeweggService", "Tesco", "Walmart", "marksandspencer", "sainsburys", "sizehelpteam"
+    ],
+    "Food & Beverage": [
+        "ArbysCares", "AskPapaJohns", "AskTigogh", "ChipotleTweets", "DunkinDonuts",
+        "JackBox", "KFC_UKI_Help", "McDonalds", "TacoBellTeam", "askpanera"
+    ],
+    "Travel & Hospitality": [
+        "AirAsiaSupport", "AirbnbHelp", "AlaskaAir", "AmericanAir", "British_Airways",
+        "Delta", "HiltonHelp", "IHGService", "JetBlue", "Kimpton", "LondonMidland",
+        "SouthwestAir", "VirginAmerica", "VirginAtlantic", "VirginTrains", "nationalrailenq"
+    ],
+    "Transportation & Public Services": [
+        "GWRHelp", "Postmates_Help", "SW_Help", "TfL", "Uber_Support", "UPSHelp"
+    ],
+    "Entertainment & Streaming": [
+        "ATVIAssist", "AskPlayStation", "SpotifyCares", "hulu_support"
+    ],
+    "Customer Support Services": [
+        "AskeBay", "AskPayPal", "AskSeagate", "comcastcares", "mediatemplehelp"
+    ],
+    "Social Media & Online Services": [
+        "TwitterSupport"
+    ],
+    "None": []
+}
 
 training_file_path = os.path.join(DATA_PATH, training_file_name)
 validation_file_path = os.path.join(DATA_PATH, validation_file_name)

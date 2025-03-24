@@ -2,11 +2,10 @@ import json
 import os
 
 from dotenv import load_dotenv
-from openai.types.fine_tuning import FineTuningJob
 from quarter_lib.logging import setup_logging
 
 from src.config import SEED
-from src.config.llm_config import get_function_schema, get_messages
+from src.config.llm_config import get_classification_function_schema, get_classification_prompt, get_binning_prompt
 
 logger = setup_logging(__name__)
 
@@ -28,17 +27,21 @@ elif AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT:
 else:
 	raise Exception("No OpenAI API key found.")
 
+def group_companies(companies: set[str]):
+	response = client.beta.chat.completions.parse(model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_binning_prompt(companies),
+												  response_format={"type":"json_object"})
+	companies = json.loads(response.choices[0].message.content)
+	companies["None"] = []
+	return companies
 
-def classify_conversation(conversation_data: dict[str, list[str]], companies: list[str], model: str) -> str:
-	allowed_companies = companies.copy()
-	if "Unclear" not in allowed_companies:
-		allowed_companies.append("Unclear")
+def classify_conversation(conversation_data: dict[str, list[str]], company_bins: dict, model: str) -> str:
 
-	function_schema = get_function_schema(allowed_companies)
-	messages = get_messages(conversation_data)
+	function_schema = get_classification_function_schema(list(company_bins.keys()))
+	messages = get_classification_prompt(company_bins, conversation_data['conversations'])
 
 	response = client.beta.chat.completions.parse(
-		model=model.replace(".", "-"), seed=SEED, messages=messages, functions=[function_schema], function_call={"name": "classify_company"}
+		model=model.replace(".", "-"), seed=SEED, messages=messages, functions=[function_schema], function_call={"name": "classify_company"},
+		temperature=0
 	)
 
 	message = response.choices[0].message
@@ -49,13 +52,13 @@ def classify_conversation(conversation_data: dict[str, list[str]], companies: li
 		content = message.content
 		arguments = json.loads(content)
 	try:
-		if "company" not in arguments.keys():
-			logger.error("No 'company' key in function call arguments.")
-			return "Unclear"
-		return arguments["company"]
+		if "bin" not in arguments.keys():
+			logger.error("No 'bin' key in function call arguments.")
+			return "None"
+		return arguments["bin"]
 	except (json.JSONDecodeError, Exception) as e:
 		logger.error(f"Error parsing function call arguments: {e}")
-		return "Unclear"
+		return "None"
 
 
 def upload_training_and_validation_files(training_file_path: str, validation_file_path: str) -> tuple[str, str]:
@@ -71,7 +74,7 @@ def upload_training_and_validation_files(training_file_path: str, validation_fil
 	return training_file_id, validation_file_id
 
 
-def start_fine_tuning_job(training_file_id: str, validation_file_id: str, model: str, hyperparameters: dict, seed: int) -> FineTuningJob:
+def start_fine_tuning_job(training_file_id: str, validation_file_id: str, model: str, hyperparameters: dict, seed: int):
 	hyperparameters = {k: v for k, v in hyperparameters.items() if v is not None}
 
 	response = client.fine_tuning.jobs.create(
