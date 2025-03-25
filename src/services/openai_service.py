@@ -32,9 +32,12 @@ def group_companies(companies: set[str]):
 	response = client.beta.chat.completions.parse(
 		model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_binning_prompt(companies), response_format={"type": "json_object"}
 	)
-	companies = json.loads(response.choices[0].message.content)
-	companies["None"] = []
-	return companies
+	company_bins = json.loads(response.choices[0].message.content)
+	if not isinstance(company_bins, list):
+		keys = company_bins.keys()
+		company_bins = company_bins[list(keys)[0]]
+	company_bins.append({"bin": "None"})
+	return company_bins
 
 
 def classify_conversation(conversation_data: dict[str, list[str]], company_bins: list[dict], model: str) -> str:
