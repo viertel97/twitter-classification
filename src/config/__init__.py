@@ -8,47 +8,187 @@ DATA_PATH = os.path.join(Path(os.path.abspath(__file__)).parent.parent.parent, "
 training_file_name = "training.jsonl"
 validation_file_name = "validation.jsonl"
 
-DEFAULT_COMPANY_BINS = {
-    "Telecommunications": [
-        "ATT", "AWSSupport", "AzureSupport", "BoostCare", "CenturyLinkHelp", "CoxHelp",
-        "MTNC_Care", "O2", "Safaricom_Care", "TMobileHelp", "USCellularCares", "VerizonSupport", "airtel_care", "idea_cares"
-    ],
-    "Technology & Software": [
-        "AdobeCare", "AmazonHelp", "AppleSupport", "AsurionCares", "DropboxSupport",
-        "GooglePlayMusic", "HPSupport", "MicrosoftHelps", "NortonSupport", "OfficeSupport",
-        "PandoraSupport", "XboxSupport", "YahooCare", "asksalesforce"
-    ],
-    "Financial Services": [
-        "AskAmex", "AskCiti", "AskRBC", "AskRobinhood", "AskVirginMoney", "Ask_WellsFargo",
-        "BofA_Help", "ChaseSupport", "SCsupport"
-    ],
-    "Retail & E-commerce": [
-        "AldiUK", "ArgosHelpers", "AskTarget", "GreggsOfficial", "MOO", "Morrisons",
-        "NeweggService", "Tesco", "Walmart", "marksandspencer", "sainsburys", "sizehelpteam"
-    ],
-    "Food & Beverage": [
-        "ArbysCares", "AskPapaJohns", "AskTigogh", "ChipotleTweets", "DunkinDonuts",
-        "JackBox", "KFC_UKI_Help", "McDonalds", "TacoBellTeam", "askpanera"
-    ],
-    "Travel & Hospitality": [
-        "AirAsiaSupport", "AirbnbHelp", "AlaskaAir", "AmericanAir", "British_Airways",
-        "Delta", "HiltonHelp", "IHGService", "JetBlue", "Kimpton", "LondonMidland",
-        "SouthwestAir", "VirginAmerica", "VirginAtlantic", "VirginTrains", "nationalrailenq"
-    ],
-    "Transportation & Public Services": [
-        "GWRHelp", "Postmates_Help", "SW_Help", "TfL", "Uber_Support", "UPSHelp"
-    ],
-    "Entertainment & Streaming": [
-        "ATVIAssist", "AskPlayStation", "SpotifyCares", "hulu_support"
-    ],
-    "Customer Support Services": [
-        "AskeBay", "AskPayPal", "AskSeagate", "comcastcares", "mediatemplehelp"
-    ],
-    "Social Media & Online Services": [
-        "TwitterSupport"
-    ],
-    "None": []
-}
+DEFAULT_COMPANY_BINS = [
+	{
+		"bin": "Aerospace & Transportation",
+		"keywords": [
+			"flights",
+			"airlines",
+			"boarding",
+			"check-in",
+			"passengers",
+			"travel",
+			"delays",
+			"luggage",
+			"reservations",
+			"connections",
+			"airport",
+			"tickets",
+			"cruise",
+			"routes",
+			"customer service",
+		],
+		"companies": [
+			"AmericanAir",
+			"Delta",
+			"SouthwestAir",
+			"British_Airways",
+			"JetBlue",
+			"AlaskaAir",
+			"VirginAmerica",
+			"VirginAtlantic",
+			"AirAsiaSupport",
+		],
+	},
+	{
+		"bin": "Retail & E-commerce",
+		"keywords": [
+			"shopping",
+			"cart",
+			"checkout",
+			"discount",
+			"delivery",
+			"returns",
+			"offers",
+			"inventory",
+			"promotions",
+			"sales",
+			"online shopping",
+			"price",
+			"marketplace",
+			"customer feedback",
+			"store locator",
+		],
+		"companies": [
+			"AmazonHelp",
+			"Walmart",
+			"eBay",
+			"AldiUK",
+			"Tesco",
+			"Sainsburys",
+			"ArgosHelpers",
+			"MarksandSpencer",
+			"DoorDash_Help",
+			"McDonalds",
+			"TacoBellTeam",
+			"ChipotleTweets",
+			"Panera",
+			"GreggsOfficial",
+			"KFC_UKI_Help",
+		],
+	},
+	{
+		"bin": "Technology & Software",
+		"keywords": [
+			"software",
+			"applications",
+			"updates",
+			"features",
+			"bug fixes",
+			"cloud",
+			"security",
+			"data",
+			"network",
+			"user experience",
+			"integration",
+			"deployment",
+			"AI",
+			"support",
+			"analytics",
+		],
+		"companies": [
+			"AdobeCare",
+			"MicrosoftHelps",
+			"DropboxSupport",
+			"GoDaddyHelp",
+			"AppleSupport",
+			"AWSSupport",
+			"NortonSupport",
+			"OfficeSupport",
+			"AzureSupport",
+			"XboxSupport",
+			"HPSupport",
+			"AskSalesforce",
+			"Idea_Cares",
+			"Mediatemplehelp",
+		],
+	},
+	{
+		"bin": "Food & Beverage",
+		"keywords": [
+			"menu",
+			"ingredients",
+			"nutrition",
+			"restaurant",
+			"takeout",
+			"meal delivery",
+			"ordering",
+			"customer favorites",
+			"specials",
+			"appetizers",
+			"drinks",
+			"franchise",
+			"seasonal items",
+			"promotions",
+			"feedback",
+		],
+		"companies": [
+			"DunkinDonuts",
+			"ArbysCares",
+			"ChipotleTweets",
+			"KFC_UKI_Help",
+			"TacoBellTeam",
+			"McDonalds",
+			"JackBox",
+			"GreggsOfficial",
+			"Panera",
+		],
+	},
+	{
+		"bin": "Telecommunications",
+		"keywords": [
+			"network coverage",
+			"data plans",
+			"mobile devices",
+			"customer service",
+			"billing",
+			"sim card",
+			"technical support",
+			"installation",
+			"service outage",
+			"upgrades",
+			"contracts",
+			"family plans",
+			"international services",
+			"support tickets",
+			"issues",
+			"hardware",
+		],
+		"companies": ["ATT", "VerizonSupport", "TMobileHelp", "SprintCare", "O2", "USCellularCares", "CenturyLinkHelp", "ComcastCares"],
+	},
+	{
+		"bin": "Hospitality & Travel",
+		"keywords": [
+			"bookings",
+			"reservations",
+			"amenities",
+			"check-in",
+			"customer reviews",
+			"packages",
+			"concierge",
+			"events",
+			"dining",
+			"experience",
+			"partnership",
+			"transportation",
+			"relaxation",
+			"feedback",
+			"customer satisfaction",
+		],
+		"companies": ["AirbnbHelp", "HiltonHelp", "Kimpton", "IHGService", "LondonMidland", "Uber_Support"],
+	},
+	{"bin": "None"},
+]
 
 training_file_path = os.path.join(DATA_PATH, training_file_name)
 validation_file_path = os.path.join(DATA_PATH, validation_file_name)

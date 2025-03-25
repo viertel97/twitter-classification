@@ -27,21 +27,27 @@ elif AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT:
 else:
 	raise Exception("No OpenAI API key found.")
 
+
 def group_companies(companies: set[str]):
-	response = client.beta.chat.completions.parse(model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_binning_prompt(companies),
-												  response_format={"type":"json_object"})
+	response = client.beta.chat.completions.parse(
+		model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_binning_prompt(companies), response_format={"type": "json_object"}
+	)
 	companies = json.loads(response.choices[0].message.content)
 	companies["None"] = []
 	return companies
 
-def classify_conversation(conversation_data: dict[str, list[str]], company_bins: dict, model: str) -> str:
 
-	function_schema = get_classification_function_schema(list(company_bins.keys()))
-	messages = get_classification_prompt(company_bins, conversation_data['conversations'])
+def classify_conversation(conversation_data: dict[str, list[str]], company_bins: list[dict], model: str) -> str:
+	function_schema = get_classification_function_schema([bin["bin"] for bin in company_bins])
+	messages = get_classification_prompt(company_bins, conversation_data["conversations"])
 
 	response = client.beta.chat.completions.parse(
-		model=model.replace(".", "-"), seed=SEED, messages=messages, functions=[function_schema], function_call={"name": "classify_company"},
-		temperature=0
+		model=model.replace(".", "-"),
+		seed=SEED,
+		messages=messages,
+		functions=[function_schema],
+		function_call={"name": "classify_company"},
+		temperature=0,
 	)
 
 	message = response.choices[0].message

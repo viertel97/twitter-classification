@@ -37,6 +37,8 @@ AZURE_ENDPOINT=XYZ
 - Tracking token usage via code (saving the token usage per request / per training).
 - Using different fine-tuning methods instead of supervised eg. [DPO](https://arxiv.org/abs/2305.18290).
 - Using the same batch_size and learning rate for both fine-tuning models to make them more comparable.
+- Add more examples for the generation of the industry-bin prompt (few-shot prompting).
+- Create agent system which validates the output and checks if the output is correct.
 
 ## Known issues
 - Due to problems with [cython-blis](https://github.com/explosion/cython-blis/issues/117) (a spacy dependency) I added the following line to the Dockerfile:

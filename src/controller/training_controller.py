@@ -2,14 +2,12 @@ from typing import Annotated
 
 from fastapi import APIRouter
 from fastapi import File, UploadFile
-from pydantic import BaseModel
 from quarter_lib.logging import setup_logging
 from sklearn.model_selection import train_test_split
 
 from src.config import SEED, training_file_path, validation_file_path
 from src.services.data_service import prepare_data, create_hierarchical_data, save_to_jsonl
-from src.services.openai_service import check_status, upload_training_and_validation_files, start_fine_tuning_job, \
-	group_companies
+from src.services.openai_service import check_status, upload_training_and_validation_files, start_fine_tuning_job, group_companies
 
 logger = setup_logging(__name__)
 
