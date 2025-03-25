@@ -28,16 +28,25 @@ else:
 	raise Exception("No OpenAI API key found.")
 
 
-def group_companies(companies: set[str]):
-	response = client.beta.chat.completions.parse(
-		model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_binning_prompt(companies), response_format={"type": "json_object"}
-	)
-	company_bins = json.loads(response.choices[0].message.content)
-	if not isinstance(company_bins, list):
-		keys = company_bins.keys()
-		company_bins = company_bins[list(keys)[0]]
-	company_bins.append({"bin": "None"})
-	return company_bins
+def group_company(company) -> str:
+    response = client.beta.chat.completions.parse(model="gpt-4o-mini-2024-07-18", seed=SEED,
+                                                  messages=get_binning_prompt(company),
+                                                  response_format={"type": "json_object"})
+    company_bin = json.loads(response.choices[0].message.content)
+    if isinstance(company_bin, dict):
+        return company_bin["bin"]
+    else:
+        return company_bin
+
+def describe_bin(bin_name: str) -> tuple[str, list[str]]:
+    response = client.beta.chat.completions.parse(model="gpt-4o-mini-2024-07-18", seed=SEED,
+                                                  messages=get_description_prompt(bin_name),
+                                                  response_format={"type": "json_object"})
+    res = json.loads(response.choices[0].message.content)
+    if isinstance(res, dict):
+        return res["keywords"]
+    else:
+        return None, None
 
 
 def classify_conversation(conversation_data: dict[str, list[str]], company_bins: list[dict], model: str) -> str:

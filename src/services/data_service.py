@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from quarter_lib.logging import setup_logging
 
+from src.services.openai_service import group_company, describe_bin
+
 logger = setup_logging(__name__)
 
 
@@ -95,3 +97,32 @@ def save_to_jsonl(data: list[dict[str, list[str]]], output_file_path: str) -> No
 			f.write(json.dumps(item) + "\n")
 
 	logger.info(f"Saved data to {output_file_path}")
+
+
+def create_company_bins(companies: list[str]) -> list[dict]:
+	bin_dict = {
+		"Entertainment & Media": [],
+		"Finance & Banking": [],
+		"Telecommunications": [],
+		"Travel & Hospitality": [],
+		"Technology & Software": [],
+		"Retail & Food Services": [],
+		"Healthcare & Pharmaceuticals": [],
+		"Transportation & Logistics": []
+	}
+	for company in companies:
+		res = group_company(company)
+		logger.info(f"{company}: {res}")
+		bin_dict[res].append(company)
+
+	bin_list = []
+	for bin in bin_dict.keys():
+		bin_list.append({"bin": bin, "companies": bin_dict[bin]})
+
+	for bin in bin_list:
+		keywords = describe_bin(bin["bin"])
+		logger.info(f"{bin['bin']}: {keywords}")
+		if keywords is not None:
+			bin["keywords"] = keywords
+	bin_list.append({"bin": "None", "companies": [], "keywords": []})
+	return bin_list
