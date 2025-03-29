@@ -30,7 +30,7 @@ async def anonymize(file_to_anonymize: Annotated[UploadFile, File]):
 	df = prepare_data(file_to_anonymize.filename)
 	# change dataframe to list of dictionaries
 	df_list = df.to_dict(orient="records")
-	for row in tqdm(df_list):
+	for row in tqdm(df_list, desc="Anonymizing text"):
 		row["text"] = clean_text(row["text"])
 	df = pd.DataFrame(df_list)
 	df.to_csv("anonymized_data.csv", index=False)

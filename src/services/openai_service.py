@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from quarter_lib.logging import setup_logging
 
 from src.config import SEED
-from src.config.llm_config import get_classification_function_schema, get_classification_prompt, get_binning_prompt
+from src.config.llm_config import get_binning_prompt, get_classification_function_schema, get_classification_prompt, get_description_prompt
 
 logger = setup_logging(__name__)
 
@@ -29,24 +29,23 @@ else:
 
 
 def group_company(company) -> str:
-    response = client.beta.chat.completions.parse(model="gpt-4o-mini-2024-07-18", seed=SEED,
-                                                  messages=get_binning_prompt(company),
-                                                  response_format={"type": "json_object"})
-    company_bin = json.loads(response.choices[0].message.content)
-    if isinstance(company_bin, dict):
-        return company_bin["bin"]
-    else:
-        return company_bin
+	response = client.beta.chat.completions.parse(
+		model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_binning_prompt(company), response_format={"type": "json_object"}
+	)
+	company_bin = json.loads(response.choices[0].message.content)
+	if isinstance(company_bin, dict):
+		return company_bin["bin"]
+	return company_bin
+
 
 def describe_bin(bin_name: str) -> tuple[str, list[str]]:
-    response = client.beta.chat.completions.parse(model="gpt-4o-mini-2024-07-18", seed=SEED,
-                                                  messages=get_description_prompt(bin_name),
-                                                  response_format={"type": "json_object"})
-    res = json.loads(response.choices[0].message.content)
-    if isinstance(res, dict):
-        return res["keywords"]
-    else:
-        return None, None
+	response = client.beta.chat.completions.parse(
+		model="gpt-4o-mini-2024-07-18", seed=SEED, messages=get_description_prompt(bin_name), response_format={"type": "json_object"}
+	)
+	bin_description = json.loads(response.choices[0].message.content)
+	if isinstance(bin_description, dict):
+		return bin_description["keywords"]
+	return bin_description
 
 
 def classify_conversation(conversation_data: dict[str, list[str]], company_bins: list[dict], model: str) -> str:

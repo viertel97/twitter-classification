@@ -1,17 +1,29 @@
 from typing import Annotated
 
-from fastapi import APIRouter
-from fastapi import File, UploadFile
+from fastapi import APIRouter, File, UploadFile
 from quarter_lib.logging import setup_logging
 from sklearn.model_selection import train_test_split
 
 from src.config import SEED, training_file_path, validation_file_path
-from src.services.data_service import prepare_data, create_hierarchical_data, save_to_jsonl, create_company_bins
-from src.services.openai_service import check_status, upload_training_and_validation_files, start_fine_tuning_job, group_companies
+from src.services.data_service import create_company_bins, create_hierarchical_data, prepare_data, prepare_file, save_to_jsonl
+from src.services.openai_service import check_status, start_fine_tuning_job, upload_training_and_validation_files
 
 logger = setup_logging(__name__)
 
 router = APIRouter(tags=["training"])
+
+
+@router.post("/group_companies")
+async def group_companies_route(training_data: Annotated[UploadFile, File]):
+	error_training_data = prepare_file(training_data)
+	if error_training_data:
+		return {"error": "Invalid file format"}
+
+	df = prepare_data(training_data.filename)
+	conversation_data, companies = create_hierarchical_data(df)
+	grouped_companies = create_company_bins(list(companies))
+
+	return grouped_companies
 
 
 @router.post("/train")
@@ -22,18 +34,11 @@ async def train(
 	batch_size: int = None,
 	learning_rate_multiplier: float = None,
 ):
-	try:
-		contents = training_data.file.read()
-		with open(training_data.filename, "wb") as f:
-			f.write(contents)
-	except Exception as e:
-		logger.error(f"Error uploading file: {e}")
-		return {"status": "error"}
-	finally:
-		training_data.file.close()
+	error_training_data = prepare_file(training_data)
+	if error_training_data:
+		return {"error": "Invalid file format"}
 	df = prepare_data(training_data.filename)
-	conversation_data, companies = create_hierarchical_data(df)
-	company_bins = create_company_bins(companies)
+	conversation_data, _ = create_hierarchical_data(df)
 
 	train_datatest, validation_dataset = train_test_split(conversation_data, test_size=0.2, random_state=SEED)
 
@@ -46,7 +51,6 @@ async def train(
 
 	return {
 		"job": job_response,
-		"company_bins": list(company_bins),
 		"training_file_id": training_file_id,
 		"validation_file_id": validation_file_id,
 	}

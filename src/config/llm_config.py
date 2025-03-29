@@ -14,7 +14,7 @@ def get_classification_function_schema(allowed_companies) -> dict:
 					"description": "The industry bin that best fits the conversation context.",
 				},
 			},
-			"required": ["bin"]
+			"required": ["bin"],
 		},
 	}
 
@@ -52,7 +52,7 @@ Your output should include:
 	]
 
 
-def get_description_prompt(bin_name: str) -> str:
+def get_description_prompt(bin_name: str) -> list[dict]:
 	return [
 		{
 			"role": "user",
@@ -68,7 +68,7 @@ Return your answer in a json format with the key "keywords".
 	]
 
 
-def get_binning_prompt(company: str) -> str:
+def get_binning_prompt(company: str) -> list[dict]:
 	return [
 		{
 			"role": "user",
